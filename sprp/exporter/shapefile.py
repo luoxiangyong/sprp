@@ -3,7 +3,7 @@ A simple photogrammetry routeing planner for UAV ,
 
 Requirements: Python 3.6+.
 
-Contact:  Xiangyong Luo <solO_lxy@126.com>
+Contact:  Xiangyong Luo <solo_lxy@126.com>
 
 BSD 2-Clause License
 
