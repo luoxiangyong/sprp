@@ -1,5 +1,5 @@
-from alg import *
-from shapefile_exporter import *
+from sprp.core.alg import *
+from sprp.exporter.shapefile import *
 
 if __name__ == "__main__":
     slc = SimpleLineCalculator(116.23589,39.90387,116.25291,39.90391,**{

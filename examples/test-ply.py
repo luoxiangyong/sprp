@@ -2,8 +2,8 @@
 import laspy
 import numpy as np
 
-from alg import *
-from ply import *
+from sprp.core.alg import *
+from sprp.exporter.ply import *
 
 ssc = SimpleStripCalculator(116.23589,39.90387,116.23391,39.90391,
         1,1, 
