@@ -31,15 +31,15 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
-import laspy
+#import laspy
 import numpy as np
 import random
 import pyproj
-from plyfile import PlyData, PlyElement
+#from plyfile import PlyData, PlyElement
 
 from ..core.alg  import *
 
-class PlyExporter(SimpleExporter):
+class PlyExporter(SimpleExportor):
     def __init__(self,filename, aboveGround = 0.):
         super().__init__()
         self.name = "PLY Exporter"
@@ -64,7 +64,7 @@ class PlyExporter(SimpleExporter):
         id = 0
         lineIndex = 0
         
-        print("Height:", calculator.flightHeight())
+        print("Height:", calculator.flight_height())
         for line in calculator.points:
             lineIndex = lineIndex + 1
             id = 0
@@ -74,10 +74,10 @@ class PlyExporter(SimpleExporter):
                 lineName = "{}".format(lineIndex)
                 self.x.append(p[0])
                 self.y.append(p[1])
-                self.z.append(self.aboveGround+calculator.flightHeight())
+                self.z.append(self.aboveGround+calculator.flight_height())
                 self.classification.append(5)
 
-            calculator.setProgressValue(lineIndex, len(calculator.points), 
+            calculator.set_progress_value(lineIndex, len(calculator.points), 
                             "Save ply file for points:{}".format(lineIndex))
 
     def generatePolygonsLayer(self, calculator):
@@ -118,7 +118,7 @@ class PlyExporter(SimpleExporter):
                 self.classification.append(2)
                 
 
-            calculator.setProgressValue(lineIndex, len(calculator.points), 
+            calculator.set_progress_value(lineIndex, len(calculator.points), 
                             "Save las file for polygons:{}".format(lineIndex))
 
     def calculateNoiseRectangle(self,point,calculator):

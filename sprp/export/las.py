@@ -38,7 +38,7 @@ import pyproj
 
 from ..core.alg import *
 
-class LasExporter(SimpleExporter):
+class LasExporter(SimpleExportor):
     def __init__(self,filename, aboveGround = 0.):
         super().__init__()
         self.name = "Las Exporter"
@@ -61,7 +61,7 @@ class LasExporter(SimpleExporter):
         id = 0
         lineIndex = 0
         
-        print("Height:", calculator.flightHeight())
+        print("Height:", calculator.flight_height())
         for line in calculator.points:
             lineIndex = lineIndex + 1
             id = 0
@@ -71,10 +71,10 @@ class LasExporter(SimpleExporter):
                 lineName = "{}".format(lineIndex)
                 self.x.append(p[0])
                 self.y.append(p[1])
-                self.z.append(self.aboveGround+calculator.flightHeight())
+                self.z.append(self.aboveGround+calculator.flight_height())
                 self.classification.append(5)
 
-            calculator.setProgressValue(lineIndex, len(calculator.points), 
+            calculator.set_progress_value(lineIndex, len(calculator.points), 
                             "Save las file for points:{}".format(lineIndex))
 
     def generatePolygonsLayer(self, calculator):
@@ -115,7 +115,7 @@ class LasExporter(SimpleExporter):
                 self.classification.append(2)
                 
 
-            calculator.setProgressValue(lineIndex, len(calculator.points), 
+            calculator.set_progress_value(lineIndex, len(calculator.points), 
                             "Save las file for polygons:{}".format(lineIndex))
 
     def calculateNoiseRectangle(self,point,calculator):

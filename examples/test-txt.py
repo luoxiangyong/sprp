@@ -1,7 +1,7 @@
 import numpy as np
 
 from sprp.core.alg import *
-from sprp.exporter.txt import *
+from sprp.export.txt import *
 
 ssc = SimpleStripCalculator(116.23589,39.90387,116.25291,39.90391,
         3,2, 

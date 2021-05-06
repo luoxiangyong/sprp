@@ -1,5 +1,5 @@
 from sprp.core.alg import *
-from sprp.exporter.shapefile import *
+from sprp.export.shapefile import *
 
 if __name__ == "__main__":
     slc = SimpleLineCalculator(116.23589,39.90387,116.25291,39.90391,**{
@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     print(slc)
 
-    linePointsResult,forwardAngle = slc.caculateLine(116.23589,39.90387,116.25291,39.90391)
+    linePointsResult,forwardAngle = slc.caculate_line(116.23589,39.90387,116.25291,39.90391)
 
     #slc.setLine(116.23589,39.90387,116.25291,39.90391)
     result = slc.calculate()

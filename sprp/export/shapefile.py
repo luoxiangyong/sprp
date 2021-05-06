@@ -37,7 +37,7 @@ from osgeo import ogr,osr
 
 from ..core.alg  import *
 
-class ShapefileExporter(SimpleExporter):
+class ShapefileExporter(SimpleExportor):
     def __init__(self,path,basename):
         super().__init__()
         self.name = "ESRI Shapefile Exporter"
@@ -92,7 +92,7 @@ class ShapefileExporter(SimpleExporter):
                 feature.SetField("LINE", lineName)
                 layer.CreateFeature(feature)
 
-            calculator.setProgressValue(lineIndex, len(calculator.points), 
+            calculator.set_progress_value(lineIndex, len(calculator.points), 
                             "Save shapefile for points:{}".format(lineIndex))
 
     def savePolygonsFile(self, calculator):
@@ -125,7 +125,7 @@ class ShapefileExporter(SimpleExporter):
                 idPolygon =  idPolygon + 1
                 name = "{}".format(id)
                 lineName = "{}".format(lineIndex)
-                rect  = calculator.calculateRectangleFormPointAndAngle(p)
+                rect  = calculator.calculate_footprint_from(p)
                 wkt = "POLYGON(({} {},{} {},{} {},{} {},{} {}))".format(
                     rect[0][0],rect[0][1],
                     rect[1][0],rect[1][1],
@@ -143,7 +143,7 @@ class ShapefileExporter(SimpleExporter):
                 # feature.SetField("LINE", lineName)
                 layerPointPloygon.CreateFeature(feature)
             
-            calculator.setProgressValue(lineIndex, len(calculator.points), 
+            calculator.set_progress_value(lineIndex, len(calculator.points), 
                             "Save shapefile for polygons:{}".format(lineIndex))
 
     def saveLinesFile(self, calculator):
@@ -187,7 +187,7 @@ class ShapefileExporter(SimpleExporter):
             feature.SetField("LINE", lineName)
             layer.CreateFeature(feature)
 
-            calculator.setProgressValue(lineIndex, len(calculator.points), 
+            calculator.set_progress_value(lineIndex, len(calculator.points), 
                             "Save shapefile for lines:{}".format(lineIndex))
 
     def save(self,calculator):
