@@ -38,7 +38,8 @@ setup(
         'shapely',
         'pyproj',
         'numpy',
-        'gdal'
+        'gdal',
+        'geojson'
     ],
 
 
