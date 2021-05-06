@@ -116,7 +116,7 @@ class MemoryExporter(SimpleExportor):
                 id = id + 1
                 name = "{}".format(id)
                 lineName = "{}".format(lineIndex)
-                rect  = calculator.calculateRectangleFormPointAndAngle(p)
+                rect  = calculator.calculate_footprint_from(p)
                 wkt = "POLYGON(({} {},{} {},{} {},{} {},{} {}))".format(
                     rect[0][0],rect[0][1],
                     rect[1][0],rect[1][1],
