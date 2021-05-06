@@ -1,5 +1,5 @@
 """
-A simple photogrammetry routeing planner for UAV ,
+A simple photogrammetry routeing planner for UAV
 
 Requirements: Python 3.6+.
 
@@ -38,6 +38,7 @@ import os
 import shutil
 from osgeo import ogr, osr
 
+
 class SimpleExportor:
     def __init__(self):
         self.name = "Simple Exporter"
@@ -60,6 +61,7 @@ class SimpleCalculator:
     """
     本类提供简单航摄区域自动曝光点设计的支持
     """
+
     def __init__(self, **kwargs):
         self.cameraWidth = kwargs.get('cameraWidth', 3000)
         self.cameraHeight = kwargs.get('cameraHeight', 2000)
@@ -124,8 +126,10 @@ class SimpleCalculator:
             sidewiseOverlap:{}
             courseline:{},
             sidewiseline:{}
-        """.format(self.cameraWidth, self.cameraHeight, self.focusLength, self.pixelSize,
-                   self.gsd, self.flightSpeed, self.courseOverlap, self.sidewiseOverlap,
+        """.format(self.cameraWidth, self.cameraHeight,
+                   self.focusLength, self.pixelSize,
+                   self.gsd, self.flightSpeed,
+                   self.courseOverlap, self.sidewiseOverlap,
                    self.courseline, self.sidewiseline)
 
         return resstr
@@ -242,6 +246,7 @@ class SimpleLineCalculator(SimpleCalculator):
     """
     本类提供对线性的简单航摄区域自动曝光点设计的支持
     """
+
     def __init__(self, startx, starty, endx, endy, **params):
         super().__init__(**params)
 
@@ -279,7 +284,9 @@ class SimpleStripCalculator(SimpleCalculator):
     """
     本类提供对条带区域的简单航摄区域自动曝光点设计的支持
     """
-    def __init__(self, startx, starty, endx, endy, leftExpand, rightExpand, **params):
+
+    def __init__(self, startx, starty, endx, endy,
+                 leftExpand, rightExpand, **params):
         super().__init__(**params)
         self.leftExpand = leftExpand if leftExpand else 0
         self.rightExpand = rightExpand if rightExpand else 0
@@ -309,15 +316,16 @@ class SimpleStripCalculator(SimpleCalculator):
             sidewiseline:{}
             leftExpand:{},
             rightExpand:{}
-        """.format(self.cameraWidth, self.cameraHeight, self.focusLength, self.pixelSize,
-                   self.gsd, self.flightSpeed, self.courseOverlap, self.sidewiseOverlap,
+        """.format(self.cameraWidth, self.cameraHeight,
+                   self.focusLength, self.pixelSize,
+                   self.gsd, self.flightSpeed, self.courseOverlap,
+                   self.sidewiseOverlap,
                    self.courseline, self.sidewiseline,
                    self.leftExpand, self.rightExpand)
 
         return resstr
 
     def calculate(self):
-
         if self.startx and self.starty and self.endx and self.endy:
             self._points = []
             self._lines = []
@@ -370,6 +378,7 @@ class SimplePolygonCalculator(SimpleCalculator):
     """
     本类提供对多边形区域的简单航摄区域自动曝光点设计的支持
     """
+
     def __init__(self, wkt_polygon, **params):
         super().__init__(**params)
 
@@ -426,7 +435,6 @@ class SimplePolygonCalculator(SimpleCalculator):
         self.rightExpand = expand_count if directionLeft is not True else 0
 
     def calculate(self):
-
         startx = self.point_first[0]
         starty = self.point_first[1]
         endx = self.point_final[0]
@@ -437,7 +445,6 @@ class SimplePolygonCalculator(SimpleCalculator):
             lineStardEndPoints = []
 
             ########
-
             geod = pyproj.Geod(ellps="WGS84")
             angle, backAngle, distanceTmp = geod.inv(
                 startx, starty, endx, endy)
