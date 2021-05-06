@@ -86,5 +86,6 @@ print(result)
 print(ssc.points)
 print(len(ssc.points))
 
-sfe = ShapefileExporter('/Users/luoxiangyong/Devel/sprp/Data', 'test-polygon')
+sfe = ShapefileExporter('/Users/luoxiangyong/Devel/test-data', 
+    'test-polygon')
 sfe.save(ssc)

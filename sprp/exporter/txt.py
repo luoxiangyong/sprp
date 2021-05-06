@@ -83,7 +83,7 @@ class TxtExporter(SimpleExporter):
                 id = id + 1
                 name = "{}".format(id)
                 lineName = "{}".format(lineIndex)
-                rect  = calculator.calculateRectangleFormPointAndAngle(p)
+                rect  = calculator.calculate_footprint_from(p)
 
                 self.x.append(rect[0][0])
                 self.y.append(rect[0][1])
