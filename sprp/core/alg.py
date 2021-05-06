@@ -38,8 +38,7 @@ import os
 import shutil
 from osgeo import ogr, osr
 
-
-class SimpleExporter:
+class SimpleExportor:
     def __init__(self):
         self.name = "Simple Exporter"
 
@@ -47,7 +46,7 @@ class SimpleExporter:
         return False
 
 
-class GeojsonExporter(SimpleExporter):
+class GeojsonExporter(SimpleExportor):
     def __init__(self):
         super().__init__()
         self.name = "Geojson Exporter"
@@ -58,6 +57,9 @@ class GeojsonExporter(SimpleExporter):
 
 ###############################################################################
 class SimpleCalculator:
+    """
+    本类提供简单航摄区域自动曝光点设计的支持
+    """
     def __init__(self, **kwargs):
         self.cameraWidth = kwargs.get('cameraWidth', 3000)
         self.cameraHeight = kwargs.get('cameraHeight', 2000)
@@ -74,10 +76,10 @@ class SimpleCalculator:
             self.cameraWidth * self.gsd
 
         # 存储每条航线的起点与终点 （startx, starty, endx, endy）
-        self.lines = None
+        self._lines = None
 
         # 存储整个区域的最终设计点，列表的列表
-        self.points = None
+        self._points = None
 
         # 当前的设计航像
         self.courseAngle = None
@@ -87,18 +89,26 @@ class SimpleCalculator:
         self.currentProgressValue = 0
         self.totalProgressValue = 100
 
-    def flightHeight(self):
+    @property
+    def points(self):
+        return self._points
+
+    @property
+    def lines(self):
+        return self._lines
+
+    def flight_height(self):
         return 1000 * self.gsd * self.focusLength / self.pixelSize
 
-    def setPogressCallback(self, cb):
+    def set_pogress_callback(self, cb):
         self.cb = cb
 
-    def setProgressValue(self, cur, total, msg):
+    def set_progress_value(self, cur, total, msg):
         self.currentProgressValue = cur
         self.totalProgressValue = total
-        self.emitProgress(msg)
+        self.emit_progress(msg)
 
-    def emitProgress(self, msg):
+    def emit_progress(self, msg):
         if self.cb:
             self.cb(self.currentProgressValue, self.totalProgressValue, msg)
 
@@ -121,13 +131,13 @@ class SimpleCalculator:
         return resstr
 
     def stastics(self):
-        if self.points is not None:
+        if self._points is not None:
             geod = pyproj.Geod(ellps="WGS84")
 
             pointCount = 0
             distance = 0
 
-            for line in self.points:
+            for line in self._points:
                 # print(line)
                 pointCount = pointCount + len(line)
                 p1 = line[0]
@@ -140,8 +150,8 @@ class SimpleCalculator:
                 distance = distance + distanceTmp
 
             return {
-                "flightHeight": self.flightHeight(),
-                "couselineCount": len(self.lines),
+                "flightHeight": self.flight_height(),
+                "couselineCount": len(self._lines),
                 "pointCount": pointCount,
                 "distance": distance / 1000,
                 "workingTime": distance / self.flightSpeed
@@ -149,7 +159,7 @@ class SimpleCalculator:
         else:
             return None
 
-    def caculateLine(self, startx, starty, endx, endy):
+    def caculate_line(self, startx, starty, endx, endy):
         geod = pyproj.Geod(ellps="WGS84")
         forwardAngle, backwardAngle, distance = geod.inv(
             startx, starty, endx, endy)
@@ -173,19 +183,18 @@ class SimpleCalculator:
     def calculate(self):
         return False
 
-    """
-    :brief 从点和指定的角度计算地面覆盖的矩形(footprint)
-
-    :param point: 指定点
-    :param angle: 航线方向
-    :param iwidth: 图像长度
-    :param iheight: 图像高度
-    :param gsd: 地面分辨率
-
-    @return 返回地面覆盖的矩形的四脚点坐标
-    """
-
     def calculate_footprint_from(self, point):
+        """
+        :brief 从点和指定的角度计算地面覆盖的矩形(footprint)
+
+        :param point: 指定点
+        :param angle: 航线方向
+        :param iwidth: 图像长度
+        :param iheight: 图像高度
+        :param gsd: 地面分辨率
+
+        :return: 返回地面覆盖的矩形的四脚点坐标
+        """
         width = self.cameraWidth * self.gsd
         height = self.cameraHeight * self.gsd
 
@@ -230,6 +239,9 @@ class SimpleCalculator:
 
 ###############################################################################
 class SimpleLineCalculator(SimpleCalculator):
+    """
+    本类提供对线性的简单航摄区域自动曝光点设计的支持
+    """
     def __init__(self, startx, starty, endx, endy, **params):
         super().__init__(**params)
 
@@ -238,7 +250,7 @@ class SimpleLineCalculator(SimpleCalculator):
         self.endx = endx
         self.endy = endy
 
-    def setLine(self, startx, starty, endx, endy):
+    def set_line(self, startx, starty, endx, endy):
         self.startx = startx
         self.starty = starty
         self.endx = endx
@@ -247,16 +259,16 @@ class SimpleLineCalculator(SimpleCalculator):
     def calculate(self):
 
         if self.startx and self.starty and self.endx and self.endy:
-            self.points = []
+            self._points = []
             line = (self.startx, self.starty, self.endx, self.endy)
-            self.lines = []
+            self._lines = []
 
-            linePointsResult, forwardAngle = self.caculateLine(*line)
-            self.points.append(linePointsResult)
-            self.lines.append(line)
+            linePointsResult, forwardAngle = self.caculate_line(*line)
+            self._points.append(linePointsResult)
+            self._lines.append(line)
 
             self.currentProgressValue = 100
-            self.emitProgress("process the line:1")
+            self.emit_progress("process the line:1")
 
             return True
         else:
@@ -264,6 +276,9 @@ class SimpleLineCalculator(SimpleCalculator):
 
 
 class SimpleStripCalculator(SimpleCalculator):
+    """
+    本类提供对条带区域的简单航摄区域自动曝光点设计的支持
+    """
     def __init__(self, startx, starty, endx, endy, leftExpand, rightExpand, **params):
         super().__init__(**params)
         self.leftExpand = leftExpand if leftExpand else 0
@@ -274,7 +289,7 @@ class SimpleStripCalculator(SimpleCalculator):
         self.endx = endx
         self.endy = endy
 
-    def setLine(self, startx, starty, endx, endy):
+    def set_line(self, startx, starty, endx, endy):
         self.startx = startx
         self.starty = starty
         self.endx = endx
@@ -304,8 +319,8 @@ class SimpleStripCalculator(SimpleCalculator):
     def calculate(self):
 
         if self.startx and self.starty and self.endx and self.endy:
-            self.points = []
-            self.lines = []
+            self._points = []
+            self._lines = []
             lineStardEndPoints = []
 
             ########
@@ -338,12 +353,12 @@ class SimpleStripCalculator(SimpleCalculator):
 
             self.totalProgressValue = len(lineStardEndPoints)
             for line in lineStardEndPoints:
-                linePointsResult, forwardAngle = self.caculateLine(*line)
-                self.points.append(linePointsResult)
-                self.lines.append(line)
+                linePointsResult, forwardAngle = self.caculate_line(*line)
+                self._points.append(linePointsResult)
+                self._lines.append(line)
 
                 self.currentProgressValue = self.currentProgressValue + 1
-                self.emitProgress("process the line:{}".format(
+                self.emit_progress("process the line:{}".format(
                     self.currentProgressValue))
 
             return True
@@ -352,6 +367,9 @@ class SimpleStripCalculator(SimpleCalculator):
 
 
 class SimplePolygonCalculator(SimpleCalculator):
+    """
+    本类提供对多边形区域的简单航摄区域自动曝光点设计的支持
+    """
     def __init__(self, wkt_polygon, **params):
         super().__init__(**params)
 
@@ -414,8 +432,8 @@ class SimplePolygonCalculator(SimpleCalculator):
         endx = self.point_final[0]
         endy = self.point_final[1]
         if startx and starty and endx and endy:
-            self.points = []
-            self.lines = []
+            self._points = []
+            self._lines = []
             lineStardEndPoints = []
 
             ########
@@ -447,12 +465,12 @@ class SimplePolygonCalculator(SimpleCalculator):
 
             self.totalProgressValue = len(lineStardEndPoints)
             for line in lineStardEndPoints:
-                linePointsResult, forwardAngle = self.caculateLine(*line)
-                self.points.append(linePointsResult)
-                self.lines.append(line)
+                linePointsResult, forwardAngle = self.caculate_line(*line)
+                self._points.append(linePointsResult)
+                self._lines.append(line)
 
                 self.currentProgressValue = self.currentProgressValue + 1
-                self.emitProgress("process the line:{}".format(
+                self.emit_progress("process the line:{}".format(
                     self.currentProgressValue))
             return True
         else:

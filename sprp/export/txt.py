@@ -36,7 +36,7 @@ import numpy as np
 
 from ..core.alg import *
 
-class TxtExporter(SimpleExporter):
+class TxtExporter(SimpleExportor):
     def __init__(self,filename, aboveGround = 0):
         super().__init__()
         self.name = "Las Exporter"
@@ -57,7 +57,7 @@ class TxtExporter(SimpleExporter):
         id = 0
         lineIndex = 0
         
-        print("Height:", calculator.flightHeight())
+        print("Height:", calculator.flight_height())
         for line in calculator.points:
             lineIndex = lineIndex + 1
             id = 0
@@ -69,7 +69,7 @@ class TxtExporter(SimpleExporter):
                 self.y.append(p[1])
                 self.z.append(self.aboveGround+0.01)
 
-            calculator.setProgressValue(lineIndex, len(calculator.points), 
+            calculator.set_progress_value(lineIndex, len(calculator.points), 
                             "Save las file for points:{}".format(lineIndex))
 
     def generatePolygonsLayer(self, calculator):
@@ -102,7 +102,7 @@ class TxtExporter(SimpleExporter):
                 self.z.append(self.aboveGround)
                 
 
-            calculator.setProgressValue(lineIndex, len(calculator.points), 
+            calculator.set_progress_value(lineIndex, len(calculator.points), 
                             "Save las file for polygons:{}".format(lineIndex))
 
     def save(self,calculator):

@@ -40,7 +40,7 @@ from qgis.utils import *
 
 from ..core.alg  import *
 
-class MemoryExporter(SimpleExporter):
+class MemoryExporter(SimpleExportor):
     def __init__(self):
         super().__init__()
         self.name = "Memory Exporter"
@@ -90,7 +90,7 @@ class MemoryExporter(SimpleExporter):
                 # feature.SetField("LINE", lineName)
                 # vLayer.CreateFeature(feature)
 
-            calculator.setProgressValue(lineIndex, len(calculator.points), 
+            calculator.set_progress_value(lineIndex, len(calculator.points), 
                             "Save memory file for points:{}".format(lineIndex))
 
     def generatePolygonsLayer(self, calculator):
@@ -140,7 +140,7 @@ class MemoryExporter(SimpleExporter):
                 # # feature.SetField("LINE", lineName)
                 # vLayer.CreateFeature(feature)
 
-            calculator.setProgressValue(lineIndex, len(calculator.points), 
+            calculator.set_progress_value(lineIndex, len(calculator.points), 
                             "Save memory file for polygons:{}".format(lineIndex))
 
     def generateLinesLayer(self, calculator):
@@ -184,7 +184,7 @@ class MemoryExporter(SimpleExporter):
             feature.setAttributes([id,lineName])
             pr.addFeature(feature)
 
-            calculator.setProgressValue(lineIndex, len(calculator.points), 
+            calculator.set_progress_value(lineIndex, len(calculator.points), 
                             "Save memory file for lines:{}".format(lineIndex))
 
     def save(self,calculator):
