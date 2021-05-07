@@ -32,11 +32,11 @@ $GSD$为地面分辨率)。
 
 - QGIS Memory文件
 
-![QGIS Memory文件](images/qgis-memory-demo.png)
+![QGIS Memory文件](https://github.com/luoxiangyong/sprp/blob/master/images/qgis-memory-demo.png)
 
 - PLY文件
 
-![PLY文件](images/ply-demo.png)
+![PLY文件](https://github.com/luoxiangyong/sprp/blob/master/images/ply-demo.png)
 
 ## 简单使用
 
