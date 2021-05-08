@@ -44,6 +44,10 @@ setup(
         'flask',
         'flask_cors'
     ],
-
+    entry_points={
+        "console_scripts":[
+            'sprp-web=sprp.app.apiserver:main'
+        ]
+    }
 
 )
