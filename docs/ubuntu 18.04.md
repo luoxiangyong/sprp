@@ -24,7 +24,7 @@ nameserver 8.8.4.4
 ```
 sudo apt-get install python3 python-dev
 #sudo apt-get install proj-bin libproj-dev
-sudo apt-get install libgdal-dev gdal-bin gdal-bin gdal-data
+sudo apt-get install libgdal-dev gdal-bin gdal-data
 sudo apt-get install python3-pyproj python3-numpy python3-gdal
 ```
 
