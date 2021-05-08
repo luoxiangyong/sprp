@@ -19,5 +19,13 @@ ssc = SimpleStripCalculator(116.23589,39.90387,116.23391,39.90391,
 result = ssc.calculate()
 print(result)
 
-sfe = PlyExporter('/Users/luoxiangyong/Devel/test-data/test-ply.ply')
+
+filepath = '/Users/luoxiangyong/Devel/test-data'
+import sys,os
+
+if len(sys.argv) == 2:
+    filepath = sys.argv[1]
+
+
+sfe = PlyExporter(os.path.join(filepath,'test-ply.ply'))
 sfe.save(ssc)

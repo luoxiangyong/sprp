@@ -39,7 +39,10 @@ setup(
         'pyproj',
         'numpy',
         'gdal',
-        'geojson'
+        'geojson',
+        'cython',
+        'flask',
+        'flask_cors'
     ],
 
 

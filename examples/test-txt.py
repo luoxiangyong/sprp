@@ -19,5 +19,11 @@ ssc = SimpleStripCalculator(116.23589,39.90387,116.25291,39.90391,
 result = ssc.calculate()
 print(result)
 
-sfe = TxtExporter('/Users/luoxiangyong/Devel/test-data/test-txt.txt')
+filepath = '/Users/luoxiangyong/Devel/test-data'
+import sys,os
+
+if len(sys.argv) == 2:
+    filepath = sys.argv[1]
+
+sfe = TxtExporter(os.path.join(filepath,"test-txt.txt"))
 sfe.save(ssc)
