@@ -86,6 +86,11 @@ print(result)
 print(ssc.points)
 print(len(ssc.points))
 
-sfe = ShapefileExporter('/Users/luoxiangyong/Devel/test-data', 
-    'test-polygon')
+filepath = '/Users/luoxiangyong/Devel/test-data'
+import sys,os
+
+if len(sys.argv) == 2:
+    filepath = sys.argv[1]
+
+sfe = ShapefileExporter(filepath, 'test-polygon')
 sfe.save(ssc)

@@ -21,5 +21,11 @@ ssc = SimpleStripCalculator(116.23589,39.90387,116.25291,39.90391,
 result = ssc.calculate()
 print(result)
 
-sfe = LasExporter('/Users/luoxiangyong/Devel/test-data/test-las.las')
+filepath = '/Users/luoxiangyong/Devel/test-data'
+import sys,os
+
+if len(sys.argv) == 2:
+    filepath = sys.argv[1]
+
+sfe = LasExporter(os.path.join(filepath,'test-las.las'))
 sfe.save(ssc)
