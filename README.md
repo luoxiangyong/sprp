@@ -1,10 +1,7 @@
 # sprp
 A simple photogrammetry route planner.
 
-
-
  This package is tested on python3.
-
 
 ## 基本介绍
 基于公式：

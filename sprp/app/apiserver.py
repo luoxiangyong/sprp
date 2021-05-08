@@ -15,6 +15,7 @@ CORS(app)
 def index():
     return render_template('index.html')
 
+
 @app.route('/api/sprp/simple')
 def simple():
     startx=request.args.get("startx")
@@ -22,8 +23,6 @@ def simple():
     endx=request.args.get("endx")
     endy=request.args.get("endy")
 
-    # print(">>> ", minx, miny, maxx, maxy)
-    # ?startx=116.23589&starty=39.90387&endx=116.25291&endy=39.90391
     ssc = SimpleStripCalculator(float(startx), float(starty),
                                 float(endx), float(endy),
                             0,0, 
@@ -43,8 +42,8 @@ def simple():
     gje = GeoJsonExportor()
     gje.save(ssc)
 
-
     return "{}".format(gje.geojson)
+
 
 @app.route('/api/sprp/polygon')
 def polygon():
@@ -83,7 +82,8 @@ def polygon():
 
 
 def main():
-    app.run(host='0.0.0.0', port=8000, debug=True)
+    port = os.environ.get("SPRP_PORT", "8000")
+    app.run(host='0.0.0.0', port=int(port), debug=True)
 
 if __name__ == "__main__":
     main()
