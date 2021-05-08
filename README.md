@@ -27,6 +27,7 @@ $GSD$为地面分辨率)。
     - 可导出简单txt文件，只包含每个曝光点的x,y,z坐标和点号
     - 可导出QGIS的memery类型矢量，便于直接与QGIS交互
     - 可导出GeoJson
+    - 支持基于Flask和Leaflet的Web端交互自动设计
 
 以下是简单的成果展示：
 

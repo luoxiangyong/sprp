@@ -53,17 +53,7 @@ class GeoJsonExportor(SimpleExportor):
 
         allPointsFeature = []
         allPolygonsFeature = []
-        # points
-        for line_index, line in enumerate(calculator.points):
-            for point_index, point in enumerate(line):
-
-                name = "{}".format(point_index)
-                lineName = "{}".format(line_index)
-                #allPoints.append((line_index, point_index, point[0], point[1]))
-                #allPoints.append(Point(point[0], point[1]))
-                feature = Feature(geometry=Point((point[0], point[1])), 
-                    properties={"name": "{}-{}".format(lineName, point_index)})
-                allPointsFeature.append(feature)
+       
 
         # polygon
         for line_index, line in enumerate(calculator.points):
@@ -84,6 +74,18 @@ class GeoJsonExportor(SimpleExportor):
                 feature = Feature(geometry=Polygon(polygon), 
                     properties={"name": "{}-{}".format(lineName,point_index)})
                 allPolygonsFeature.append(feature)
+
+         # points
+        for line_index, line in enumerate(calculator.points):
+            for point_index, point in enumerate(line):
+
+                name = "{}".format(point_index)
+                lineName = "{}".format(line_index)
+                #allPoints.append((line_index, point_index, point[0], point[1]))
+                #allPoints.append(Point(point[0], point[1]))
+                feature = Feature(geometry=Point((point[0], point[1])), 
+                    properties={"name": "{}-{}".format(lineName, point_index)})
+                allPointsFeature.append(feature)
 
         allFeatureCollection = FeatureCollection([*allPointsFeature,
                                                   *allPolygonsFeature])

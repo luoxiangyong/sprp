@@ -3,11 +3,10 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>基于SPRP的地图展示</title>
+    <title>基于SPRP的无人机航线自动设计</title>
 
     <style>
-        body,
-        html {
+        body,html {
             margin: 0;
             height: 100%;
         }
@@ -15,6 +14,19 @@
         #map {
             margin: 0;
             height: 100%;
+            
+        }
+
+        .map-circle{
+            border-radius: 10px;
+            opacity: 0.6;
+            background: red;
+            color:white;
+            text-align:center;
+            line-height:20px;
+            height: 20px;
+            word-break:keep-all;
+            white-space:nowrap;
         }
     </style>
 
@@ -22,19 +34,117 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
     <!-- js文件 -->
     <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
-
+    <script src="https://cdn.bootcdn.net/ajax/libs/Turf.js/6.3.0/turf.min.js"></script>
     <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
-
+    <script src="/static/js/dat.gui.min.js"></script>
 </head>
 
 <body>
+    
     <div id="map"></div>
     <script>
+
+        function createURL(urlConfig) {
+            var length = urlConfig && urlConfig.length,
+                idx = 0,
+                url = urlConfig.url + '?';
+            for (var key in urlConfig) {
+                if (key != 'url' && urlConfig[key] !== null) {
+                    url += (key + '=' + encodeURIComponent(urlConfig[key]) + '&');
+                }
+            }
+            return url.substring(0, url.lastIndexOf('&'));
+        }
+
+        var options = null;
+
+        var startDrawPolygon = false;
+
+        var current_polygon = null
+        var points = [], geometry = []
+        var lines = new L.polyline([],{
+                                    color: options?options.strokeColor:'black'})
+        var tempLines = new L.polyline([], { 
+                                    dashArray: 5,
+                                    color: options?options.strokeColor:'black'})
+        var nodes = []
+        var polygon = null
+
+        // dat.ui
+        var Options = function() {
+            // camera
+            this.focusLength = 35;  
+            this.cameraWidth = 5000; 
+            this.cameraHeight = 3000; 
+            this.pixelSize = 2.8; 
+
+            // Aerophotogrammetric
+            this.courseOverlap = 0.8
+            this.sidewiseOverlap = 0.6
+            this.gsd = 0.05
+
+            // render
+            this.fillColor = '#0000ff'
+            this.strokeColor = '#ffffff'
+
+            this.pointColor = '#ff0000'
+            this.fontColor = '#ffffff'
+
+            this.startDrawPolygon = function() {
+                console.log("start polygon")
+                
+
+                resetDrawStatus()
+
+                startDrawPolygon = true;
+            }
+        };
+
+        function resetDrawStatus() {
+            points = []
+            lines = new L.polyline([],{color: options.strokeColor})
+            tempLines = new L.polyline([], { dashArray: 5,
+                                    color: options?options.strokeColor:'black'})
+            geometry = []
+        }
+
+        window.onload = function() {
+            options = new Options();
+            var gui = new dat.GUI();
+
+            var f1 = gui.addFolder('Camera Parameters')
+            f1.add(options, "focusLength", 1,300)
+            f1.add(options, "cameraWidth", 1000,20000)
+            f1.add(options, "cameraHeight", 1000,20000)
+            f1.add(options, "focusLength", 5,300)
+            f1.open()
+
+            var f2 = gui.addFolder('Aerophotogrammetric Parameters')
+            f2.add(options, "courseOverlap", 0.6,1.0)
+            f2.add(options, "sidewiseOverlap", 0.3,1.0)
+            f2.add(options, "gsd", 0.01,0.50)
+            f2.open()
+
+            var f3 = gui.addFolder('Render Parameters')
+            //var f31 = gui.addFolder('Polygon')
+            f3.addColor(options, "fillColor")
+            f3.addColor(options, "strokeColor")
+            //var f32 = gui.addFolder('Point')
+            f3.addColor(options, "pointColor")
+            f3.addColor(options, "fontColor")
+            f3.open()
+
+            gui.add(options, "startDrawPolygon")
+
+            gui.show()
+
+            $("div.ac").css("zIndex",1000)
+        };
+        ///////////////map
         var map = new L.Map('map', {
             center: new L.LatLng(39.86, 116.45),
-            zoom: 10
+            zoom: 16,
         });
-
 
         var baseLayers = {
             'Sputnik': L.tileLayer('http://{s}.tiles.maps.sputnik.ru/{z}/{x}/{y}.png', {
@@ -63,32 +173,171 @@
             collapsed: true
         }).addTo(map);
 
+        L.control.scale({maxWidth:200,metric:true,imperial:false}).addTo(map);
+
         var bj = L.marker([39.92, 116.46]).bindPopup('这里是北京');
         sh = L.marker([31.213, 121.445]).bindPopup('这里是上海');
         gz = L.marker([23.16, 113.23]).bindPopup('这里是广州');
         var cities = L.layerGroup([bj, sh, gz]).addTo(map);
 
-        var myStyle = {
-            "color": "#0f4",
-            "weight": 3,
-            "opacity": 0.8,
+        // 事件处理
+        map.on('click', onClick);    //点击地图
+        map.on('dblclick', onDoubleClick);
+        map.on('mousemove', onMove)//双击地图
+        map.on('keypress', onKeyPress)
 
-        };
-       
-
-        $.ajax({
-            type: "get",
-            url: "http://0.0.0.0:8000/api/sprp?minx=116.23589&miny=39.90387&maxx=116.25291&maxy=39.90391",
-            dataType: 'json',
-            success: function (response) {
-        
-                geojsonLayer = L.geoJson(response, {
-                    style: myStyle
-                }).addTo(map);
+        function onKeyPress(e) {
+            //console.log("keypress:",e,e.originalEvent.key, e.originalEvent.keyCode)
+            if(startDrawPolygon && e.originalEvent.keyCode == 27){
+                startDrawPolygon = false;
+                
+                map.removeLayer(tempLines)
+                map.removeLayer(lines)
+                
+                for(var i = 0; i < nodes.length; i++){
+                    map.removeLayer(nodes[i])
+                }
+                resetDrawStatus()
             }
-        });
+        }
+
+        //map.off(....) 关闭该事件
+
+        function onClick(e) {
+            if(!startDrawPolygon)
+                return 
+            points.push([e.latlng.lat, e.latlng.lng])
+            lines.addLatLng(e.latlng)
+            map.addLayer(tempLines)
+            map.addLayer(lines)
+            const node=L.circle(e.latlng, { color: '#ff0000', 
+                                            fillColor: 'ff0000', 
+                                            fillOpacity: 1 })
+            map.addLayer(node)
+            nodes.push(node)
+            geometry.push(node)
+        }
+        
+        function onMove(e) {
+            if(!startDrawPolygon)
+                return 
+
+            if (points.length > 0) {
+                ls = [points[points.length - 1], 
+                      [e.latlng.lat, e.latlng.lng], 
+                      points[0]]
+                tempLines.setLatLngs(ls)
+                // map.addLayer(tempLines)
+            }
+        }
+
+        function onDoubleClick(e) {
+            if(!startDrawPolygon)
+                return 
+            polygon = L.polygon(points)
+            //console.log(polygon)
+            geometry.push(polygon.addTo(map))
+            current_polygon = points
+            
+            points = []
+            
+            console.log("当前的点",current_polygon)
+            //map.removeLayer(tempLines)
+            //tempLines.remove()
+            lines.remove()
+            tempLines.remove()
+
+            polygon_wkt = createPolygonWkt()
+            console.log("拼接生成的:",polygon_wkt)
+
+
+            // 计算面积
+            var area = turf.area(polygon.toGeoJSON()) * 1e-6
+            console.log("当前测区面积", area)
+
+            if(area > 20) {
+                startDrawPolygon = false
+                window.alert("当前您选择的面积太大了：有" + area + "平方公里呢！")
+                return
+            }
+
+            urlConfig = {
+                "url":"http://0.0.0.0:8000/api/sprp/polygon",
+                "wkt":polygon_wkt,
+                "focusLength":options.focusLength,
+                "cameraWidth":options.cameraWidth,
+                "cameraHeight":options.cameraHeight,
+                "pixelSize":options.pixelSize,
+                "courseOverlap":options.courseOverlap,
+                "sidewiseOverlap":options.sidewiseOverlap,
+                "gsd":options.gsd
+            }
+
+            url = createURL(urlConfig)
+            console.log(url)
+            ///*
+            $.ajax({
+                type: "get",
+                url:url,
+                dataType: 'json',
+                success: function (response) {
+
+                    var myStyle = {
+                        "color": options.fillColor,
+                        //"weight": 3,
+                        "opacity": 0.05,
+                        "icon":null
+                    };
+            
+                    geojsonLayer = L.geoJson(response, {
+                        style: myStyle,
+                        pointToLayer:function(geoJsonPoint, latlng) {
+
+                            let htmlStr = geoJsonPoint.properties["name"]
+                                          
+                            let icon = L.divIcon({
+                                    html: htmlStr,
+                                    iconSize: [20, 20],
+                                    className: 'map-circle'
+                                })
+
+                            //console.log(geoJsonPoint)
+
+                            c =  L.marker(latlng, { color: options.fontColor, 
+                                                    fillColor: options.pointColor, 
+                                                    fillOpacity: 1,
+                                                    icon:icon,
+                                                    
+                                        });
+
+                            
+                            return c
+                        }
+                    }).addTo(map);
+
+                    $('div.map-circle').css('background', options.pointColor)
+                    $('div.map-circle').css('color', options.fontColor)
+                }
+            });
+            //*/
+
+            startDrawPolygon = false
+        }
+
+        function createPolygonWkt() {
+            var res = ""
+
+            for(var i = 0; i < current_polygon.length; i++){
+                res +=  current_polygon[i][1] + " " + current_polygon[i][0] + ","
+            }
+
+            res +=  current_polygon[0][1] + " "
+                  + current_polygon[0][0]
+            res = "POLYGON((" + res + "))"
+                 
+            return res
+        }
     </script>
 
 </body>
-
 </html>
