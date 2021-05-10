@@ -69,6 +69,10 @@ class ShapefileExporter(SimpleExportor):
         field = ogr.FieldDefn("LINE", ogr.OFTString)
         field.SetWidth(20)
         layer.CreateField(field)
+        field = ogr.FieldDefn("Z", ogr.OFTReal)
+        field.SetWidth(8)
+        field.SetPrecision(5)
+        layer.CreateField(field)
         ########################################################################
 
         # 写入点
@@ -90,6 +94,7 @@ class ShapefileExporter(SimpleExportor):
                 feature.SetField("ID", id)
                 feature.SetField("NAME", name)
                 feature.SetField("LINE", lineName)
+                feature.SetField("Z", calculator.flight_height())
                 layer.CreateFeature(feature)
 
             calculator.set_progress_value(lineIndex, len(calculator.points), 

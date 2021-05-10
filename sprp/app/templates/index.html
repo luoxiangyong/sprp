@@ -98,6 +98,42 @@
 
                 startDrawPolygon = true;
             }
+
+            this.exportFormat = 'GeoJSON'
+            this.filename = "your_file_name"
+            this.export = function() {
+                console.log('Start to export file', this.exportFormat)
+
+                // 以文件的方式，重新请求数据
+                if(current_polygon && current_polygon.length > 0) {
+                    
+                    getFileUrlConfig = {
+                        "url":"http://0.0.0.0:8000/api/sprp/polygon",
+                        "wkt":polygon_wkt,
+                        "focusLength":options.focusLength,
+                        "cameraWidth":options.cameraWidth,
+                        "cameraHeight":options.cameraHeight,
+                        "pixelSize":options.pixelSize,
+                        "courseOverlap":options.courseOverlap,
+                        "sidewiseOverlap":options.sidewiseOverlap,
+                        "gsd":options.gsd,
+                        'filetype':options.exportFormat,
+                        'filename':options.filename
+                    }
+
+                    getFileUrl = createURL(getFileUrlConfig)
+                    console.log(getFileUrl)
+                    
+                    var link = document.createElement("a");
+                    link.download = name;     
+                    link.href = getFileUrl;     
+                    link.click();
+                }else{
+                    window.alert("请选确定一个多边形航摄区域！")
+                    return
+                }
+
+            }
         };
 
         function resetDrawStatus() {
@@ -136,6 +172,13 @@
 
             gui.add(options, "startDrawPolygon")
 
+            var f4 = gui.addFolder('Export Options')
+            f4.add(options, "exportFormat",['ESRI Shaplefile', 'GeoJSON'])
+            f4.add(options, "filename")
+            f4.open()
+
+            gui.add(options, "export")
+            
             gui.show()
 
             $("div.ac").css("zIndex",1000)
@@ -275,43 +318,41 @@
             }
 
             url = createURL(urlConfig)
-            console.log(url)
+            //console.log(url)
             ///*
             $.ajax({
                 type: "get",
                 url:url,
                 dataType: 'json',
                 success: function (response) {
-
                     var myStyle = {
                         "color": options.fillColor,
                         //"weight": 3,
                         "opacity": 0.05,
                         "icon":null
                     };
-            
-                    geojsonLayer = L.geoJson(response, {
+                    console.log('服务器相应:',response)
+
+                    if(response.status != 'success'){
+                        window.alert('服务器错误！')
+                        return;
+                    }
+
+                    geojsonLayer = L.geoJson(response.data, {
                         style: myStyle,
                         pointToLayer:function(geoJsonPoint, latlng) {
-
-                            let htmlStr = geoJsonPoint.properties["name"]
-                                          
-                            let icon = L.divIcon({
-                                    html: htmlStr,
-                                    iconSize: [20, 20],
-                                    className: 'map-circle'
-                                })
-
-                            //console.log(geoJsonPoint)
+                            let htmlStr = geoJsonPoint.properties["name"]   
+                            let icon = L.divIcon({  html: htmlStr,
+                                                    iconSize: [20, 20],
+                                                    className: 'map-circle'
+                                                })
 
                             c =  L.marker(latlng, { color: options.fontColor, 
                                                     fillColor: options.pointColor, 
                                                     fillOpacity: 1,
-                                                    icon:icon,
-                                                    
-                                        });
+                                                    icon:icon,                  
+                                                });
 
-                            
                             return c
                         }
                     }).addTo(map);

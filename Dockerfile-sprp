@@ -1,0 +1,12 @@
+FROM sprp-web
+RUN echo "start build sprp..."
+
+RUN rm -rf /sprp-home/*
+COPY . /sprp-home/
+WORKDIR /sprp-home
+
+RUN pip3 install -e .
+
+ENV SPRP_PORT 8000
+
+ENTRYPOINT ["sprp-web"]

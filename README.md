@@ -5,19 +5,24 @@ A simple photogrammetry route planner.
 
 ## 基本介绍
 基于公式：
+
 $$\frac{focusLength}{flightHeight} = \frac{pixelSize}{GSD}$$
+
 (其中，$focusLength$为相机焦距，$flightHeight$为飞行高度，$pixelSize$为像素点物理大小，
 $GSD$为地面分辨率)。
 
 
 提供以下几种类型的航摄区域的自动曝光点生成:
+
     - 简单线性
     - 条带
     - 多边形区域
+  
 成果包含：根据航向、旁向重叠度自动生成的曝光点、每个曝光点对应的footprint、每条航线等geometry
 类型。
 
 支持以下特性：
+
     - 可导出shaplefile文件，各种geometry分别存储
     - 可导出ply文件，便于三维展示
     - 可导出las文件，便于三维展示，需要安装pylas库

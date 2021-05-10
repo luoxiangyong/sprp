@@ -383,9 +383,9 @@ class SimplePolygonCalculator(SimpleCalculator):
         super().__init__(**params)
 
         self.poly = wkt.loads(wkt_polygon)
-        print("Before Orient:", self.poly.wkt)
+        # print("Before Orient:", self.poly.wkt)
         self.poly = geometry.polygon.orient(self.poly, 1.0)
-        print("After Orient:", self.poly.wkt)
+        # print("After Orient:", self.poly.wkt)
 
         rect = self.poly.minimum_rotated_rectangle
         rect_coords = list(rect.exterior.coords)

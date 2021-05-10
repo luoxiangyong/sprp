@@ -84,7 +84,10 @@ class GeoJsonExportor(SimpleExportor):
                 #allPoints.append((line_index, point_index, point[0], point[1]))
                 #allPoints.append(Point(point[0], point[1]))
                 feature = Feature(geometry=Point((point[0], point[1])), 
-                    properties={"name": "{}-{}".format(lineName, point_index)})
+                            properties={"name": "{}-{}".format(lineName, point_index),
+                                        "Z":calculator.flight_height()
+                                        }
+                          )
                 allPointsFeature.append(feature)
 
         allFeatureCollection = FeatureCollection([*allPointsFeature,
@@ -92,8 +95,12 @@ class GeoJsonExportor(SimpleExportor):
 
         self._geojson = dumps(allFeatureCollection)
         if self.filename != '':
-            with open(self.filename,'w') as file:
-                file.write(self._geojson)
+            try:
+                with open(self.filename,'w') as file:
+                    file.write(self._geojson)
+            except:
+                return False
+        return True
 
         
 

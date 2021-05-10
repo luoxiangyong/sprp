@@ -40,7 +40,7 @@ setup(
         'numpy',
         'gdal',
         'geojson',
-        'cython',
+        #'cython',
         'flask',
         'flask_cors'
     ],
