@@ -11,7 +11,7 @@ from sprp.export.geojson import *
 from sprp.export.shapefile import *
 
 app = Flask(__name__)
-CORS(app)
+#CORS(app)
 
 @app.route('/')
 def index():

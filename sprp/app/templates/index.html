@@ -44,6 +44,18 @@
     <div id="map"></div>
     <script>
 
+        ip = "http://127.0.0.1:8000"
+
+        var urlPath = window.document.location.href;  //浏览器显示地址 http://10.15.5.83:5555/ISV/demo.aspx?a=1&b=2
+        var docPath = window.document.location.pathname; //文件在服务器相对地址 /ISV/demo.aspx
+        var index = urlPath.indexOf(docPath);
+        var serverPath = urlPath.substring(0, index);
+        console.log("远程IP:",serverPath)
+
+        ip = window.document.location.host
+
+        console.log(ip)
+
         function createURL(urlConfig) {
             var length = urlConfig && urlConfig.length,
                 idx = 0,
@@ -108,7 +120,7 @@
                 if(current_polygon && current_polygon.length > 0) {
                     
                     getFileUrlConfig = {
-                        "url":"http://0.0.0.0:8000/api/sprp/polygon",
+                        "url": "/api/sprp/polygon",
                         "wkt":polygon_wkt,
                         "focusLength":options.focusLength,
                         "cameraWidth":options.cameraWidth,
@@ -306,7 +318,7 @@
             }
 
             urlConfig = {
-                "url":"http://0.0.0.0:8000/api/sprp/polygon",
+                "url":"/api/sprp/polygon",
                 "wkt":polygon_wkt,
                 "focusLength":options.focusLength,
                 "cameraWidth":options.cameraWidth,
@@ -318,7 +330,7 @@
             }
 
             url = createURL(urlConfig)
-            //console.log(url)
+            console.log('>>> ',url)
             ///*
             $.ajax({
                 type: "get",
