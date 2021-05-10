@@ -46,7 +46,8 @@ setup(
     ],
     entry_points={
         "console_scripts":[
-            'sprp-web=sprp.app.apiserver:main'
+            'sprp-web=sprp.app.apiserver:main',
+            'sprp-cmd=sprp.app.sprpcmd:main'
         ]
     }
 

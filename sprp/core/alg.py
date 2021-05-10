@@ -403,14 +403,14 @@ class SimplePolygonCalculator(SimpleCalculator):
         # distance1 代表与第4个点的距离
         angle2, backAngle2, distance2 = geod.inv(p1[0], p1[1], p4[0], p4[1])
 
-        print(angle1, backAngle1, distance1)
-        print(angle2, backAngle2, distance2)
+        #print(angle1, backAngle1, distance1)
+        #print(angle2, backAngle2, distance2)
 
         angle1 = angle1 if angle1 > 0 else angle1 + 360
         angle2 = angle2 if angle2 > 0 else angle2 + 360
 
-        print(angle1, backAngle1, distance1)
-        print(angle2, backAngle2, distance2)
+        #print(angle1, backAngle1, distance1)
+        #print(angle2, backAngle2, distance2)
 
         # 确定使用哪个方向上的点为我所用
         self.point_first = p1

@@ -27,5 +27,5 @@ import sys,os
 if len(sys.argv) == 2:
     filepath = sys.argv[1]
 
-sfe = LasExporter(os.path.join(filepath,'test-las.las'))
+sfe = LasExportor(os.path.join(filepath,'test-las.las'))
 sfe.save(ssc)

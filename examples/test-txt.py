@@ -25,5 +25,5 @@ import sys,os
 if len(sys.argv) == 2:
     filepath = sys.argv[1]
 
-sfe = TxtExporter(os.path.join(filepath,"test-txt.txt"))
+sfe = TxtExportor(os.path.join(filepath,"test-txt.txt"))
 sfe.save(ssc)

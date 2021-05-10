@@ -38,7 +38,7 @@ import pyproj
 
 from ..core.alg import *
 
-class LasExporter(SimpleExportor):
+class LasExportor(SimpleExportor):
     def __init__(self,filename, aboveGround = 0.):
         super().__init__()
         self.name = "Las Exporter"

@@ -52,7 +52,7 @@ class ShapefileExporter(SimpleExportor):
         driver = ogr.GetDriverByName('ESRI Shapefile')
         path = os.path.join(self.path,self.basename,
                             "{}-points.shp".format(self.basename))
-        print(path)
+        #print(path)
         dataSource = driver.CreateDataSource(path)
         
         spatialReference = osr.SpatialReference()
@@ -70,7 +70,7 @@ class ShapefileExporter(SimpleExportor):
         field.SetWidth(20)
         layer.CreateField(field)
         field = ogr.FieldDefn("Z", ogr.OFTReal)
-        field.SetWidth(8)
+        field.SetWidth(20)
         field.SetPrecision(5)
         layer.CreateField(field)
         ########################################################################
@@ -107,7 +107,7 @@ class ShapefileExporter(SimpleExportor):
         driverPointPloygon = ogr.GetDriverByName('ESRI Shapefile')
         path = os.path.join(self.path,
                     self.basename,"{}-polygons.shp".format(self.basename))
-        print(path)
+        #print(path)
         dataSourcePointPloygon = driverPointPloygon.CreateDataSource(path)
         spatialReference = osr.SpatialReference()
         spatialReference.SetWellKnownGeogCS('WGS84')
@@ -184,7 +184,7 @@ class ShapefileExporter(SimpleExportor):
             lineName = "{}".format(lineIndex)
             wkt = "LineString({} {}, {} {})".format(line[0],line[1],
                                                     line[2],line[3])
-            print(wkt)
+            # print(wkt)
             geometry = ogr.CreateGeometryFromWkt(wkt)
             feature = ogr.Feature(layer.GetLayerDefn())
             feature.SetGeometry(geometry)

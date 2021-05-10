@@ -78,3 +78,26 @@ docker login
 docker push sololxy/sprp-web
 ```
 
+## Docker使用
+
+安装了docker后输入如下命令
+```shell
+docker pull sololxy/sprp-web
+docker run -name sprp_demo sololxy/sprp-web -p 8000:8000
+```
+启动浏览器，输入：http://localhost:8080/ ,即可。
+
+如果出现页面没有相应的情况，可能是docker的远程访问没打开，请按如下步骤设置系统：
+
+```shell
+# 修改docker服务的配置文件
+vim /lib/systemd/system/docker.service
+# 找到“ExecStart”，把该行修改为： 
+ExecStart=/usr/bin/dockerd -H unix:///var/run/docker.sock -H tcp://0.0.0.0:2375
+# 保存退出
+# 重新加载
+systemctl daemon-reload
+# 重启docker服务
+systemctl restart docker
+```
+

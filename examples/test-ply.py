@@ -27,5 +27,5 @@ if len(sys.argv) == 2:
     filepath = sys.argv[1]
 
 
-sfe = PlyExporter(os.path.join(filepath,'test-ply.ply'))
+sfe = PlyExportor(os.path.join(filepath,'test-ply.ply'))
 sfe.save(ssc)

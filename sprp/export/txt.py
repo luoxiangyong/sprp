@@ -36,7 +36,7 @@ import numpy as np
 
 from ..core.alg import *
 
-class TxtExporter(SimpleExportor):
+class TxtExportor(SimpleExportor):
     def __init__(self,filename, aboveGround = 0):
         super().__init__()
         self.name = "Las Exporter"
