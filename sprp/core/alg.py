@@ -1,36 +1,36 @@
-"""
-A simple photogrammetry routeing planner for UAV
-
-Requirements: Python 3.6+.
-
-Contact:  Xiangyong Luo <solo_lxy@126.com>
-
-BSD 2-Clause License
-
-Copyright (c) 2021, luoxiangyong
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice,
-   this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-"""
+###############################################################################
+# A simple photogrammetry route planner for UAV
+# 
+# Requirements: Python 3.6+.
+# 
+# Contact:  Xiangyong Luo <solo_lxy@126.com>
+# 
+# BSD 2-Clause License
+# 
+# Copyright (c) 2021, luoxiangyong
+# All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+# 
+# 1. Redistributions of source code must retain the above copyright notice, this
+#    list of conditions and the following disclaimer.
+# 
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+###############################################################################
 from shapely import geometry, wkt
 import pyproj
 import math
@@ -76,10 +76,8 @@ class GeojsonExporter(SimpleExportor):
 
 ###############################################################################
 class SimpleCalculator(SimpleProgressNotifier):
+    """本类提供简单航摄区域自动曝光点设计的支持
     """
-    本类提供简单航摄区域自动曝光点设计的支持
-    """
-
     def __init__(self, **kwargs):
 
         super(SimpleCalculator, self).__init__()
@@ -192,16 +190,25 @@ class SimpleCalculator(SimpleProgressNotifier):
         return False
 
     def calculate_footprint_from(self, point):
-        """
-        :brief 从点和指定的角度计算地面覆盖的矩形(footprint)
+        """从点和指定的角度计算地面覆盖的矩形(footprint)
 
-        :param point: 指定点
-        :param angle: 航线方向
-        :param iwidth: 图像长度
-        :param iheight: 图像高度
-        :param gsd: 地面分辨率
+        Parameters
+        ----------
+        point : list 
+            指定点
+        angle : float
+            航线方向
+        width : int 
+            图像长度
+        iheight : int 
+            图像高度
+        gsd : float 
+            地面分辨率
 
-        :return: 返回地面覆盖的矩形的四脚点坐标
+        Returns
+        -------
+        tuple
+            返回地面覆盖的矩形的四脚点坐标
         """
         width = self.cameraWidth * self.gsd
         height = self.cameraHeight * self.gsd
@@ -250,7 +257,6 @@ class SimpleLineCalculator(SimpleCalculator):
     """
     本类提供对线性的简单航摄区域自动曝光点设计的支持
     """
-
     def __init__(self, startx, starty, endx, endy, **params):
         super().__init__(**params)
 
@@ -283,12 +289,10 @@ class SimpleLineCalculator(SimpleCalculator):
         else:
             return False
 
-
 class SimpleStripCalculator(SimpleCalculator):
     """
     本类提供对条带区域的简单航摄区域自动曝光点设计的支持
     """
-
     def __init__(self, startx, starty, endx, endy,
                  leftExpand, rightExpand, **params):
         super().__init__(**params)
@@ -377,12 +381,10 @@ class SimpleStripCalculator(SimpleCalculator):
         else:
             return False
 
-
 class SimplePolygonCalculator(SimpleCalculator):
     """
     本类提供对多边形区域的简单航摄区域自动曝光点设计的支持
     """
-
     def __init__(self, wkt_polygon, **params):
         super().__init__(**params)
 
