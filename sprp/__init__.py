@@ -36,7 +36,7 @@ VERSION = (0, 6, 2)
 __version__ = '.'.join([str(x) for x in VERSION])
 
 from .core.alg import *
-from .export.geojson import *
+#from .export.geojson import *
 from .export.shapefile import *
 
 __all__ = [
@@ -45,7 +45,7 @@ __all__ = [
    'SimpleStripCalculator',
    'SimplePolygonCalculator',
    'SimpleLineCalculator',
-   'GeoJsonExportor',
+   #'GeoJsonExportor',
    'ShapefileExportor'
 
 ]
