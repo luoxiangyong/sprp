@@ -39,8 +39,27 @@ import shutil
 from osgeo import ogr, osr
 
 
-class SimpleExportor:
+class SimpleProgressNotifier(object):
     def __init__(self):
+        self.cb = None
+        self.currentProgressValue = 0
+        self.totalProgressValue = 100
+
+    def set_pogress_callback(self, cb):
+        self.cb = cb
+
+    def set_progress_value(self, cur, total, msg):
+        self.currentProgressValue = cur
+        self.totalProgressValue = total
+        self.emit_progress(msg)
+
+    def emit_progress(self, msg):
+        if self.cb:
+            self.cb(self.currentProgressValue, self.totalProgressValue, msg)
+
+class SimpleExportor(SimpleProgressNotifier):
+    def __init__(self):
+        super(SimpleExportor, self).__init__()
         self.name = "Simple Exporter"
 
     def save(self, calculator):
@@ -55,14 +74,16 @@ class GeojsonExporter(SimpleExportor):
     def save(self, calculator):
         return False
 
-
 ###############################################################################
-class SimpleCalculator:
+class SimpleCalculator(SimpleProgressNotifier):
     """
     本类提供简单航摄区域自动曝光点设计的支持
     """
 
     def __init__(self, **kwargs):
+
+        super(SimpleCalculator, self).__init__()
+
         self.cameraWidth = kwargs.get('cameraWidth', 3000)
         self.cameraHeight = kwargs.get('cameraHeight', 2000)
         self.focusLength = kwargs.get('focusLength', 35)
@@ -86,11 +107,6 @@ class SimpleCalculator:
         # 当前的设计航像
         self.courseAngle = None
 
-        self.cb = None
-
-        self.currentProgressValue = 0
-        self.totalProgressValue = 100
-
     @property
     def points(self):
         return self._points
@@ -101,18 +117,6 @@ class SimpleCalculator:
 
     def flight_height(self):
         return 1000 * self.gsd * self.focusLength / self.pixelSize
-
-    def set_pogress_callback(self, cb):
-        self.cb = cb
-
-    def set_progress_value(self, cur, total, msg):
-        self.currentProgressValue = cur
-        self.totalProgressValue = total
-        self.emit_progress(msg)
-
-    def emit_progress(self, msg):
-        if self.cb:
-            self.cb(self.currentProgressValue, self.totalProgressValue, msg)
 
     def __str__(self):
         resstr = """

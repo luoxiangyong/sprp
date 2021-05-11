@@ -42,7 +42,8 @@ setup(
         'geojson',
         #'cython',
         'flask',
-        'flask_cors'
+        'flask_cors',
+        'tqdm'
     ],
     entry_points={
         "console_scripts":[
