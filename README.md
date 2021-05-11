@@ -68,7 +68,7 @@ ssc = SimpleStripCalculator(116.23589,39.90387,116.25291,39.90391,
 result = ssc.calculate()
 print(result)
 
-sfe = TxtExporter('/path/to/save/test-data/test-txt.txt')
+sfe = TxtExportor('/path/to/save/test-data/test-txt.txt')
 sfe.save(ssc)
 ```
 

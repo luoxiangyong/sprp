@@ -41,7 +41,7 @@ from ..core.alg import *
 class GeoJsonExportor(SimpleExportor):
     def __init__(self,filename='', aboveGround = 0.):
         super().__init__()
-        self.name = "GeoJson Exporter"
+        self.name = "GeoJson Exportor"
         self.filename = filename
         self._geojson = None
     

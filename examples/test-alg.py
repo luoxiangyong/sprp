@@ -41,7 +41,7 @@ if __name__ == "__main__":
     print(ssc.points)
     print(len(ssc.points))
 
-    sfe = ShapefileExporter('/Users/luoxiangyong/Devel/sprp/Data', 'test-project')
+    sfe = ShapefileExportor('/Users/luoxiangyong/Devel/sprp/Data', 'test-project')
     sfe.save(ssc)
 
 

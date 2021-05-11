@@ -60,16 +60,7 @@ class SimpleProgressNotifier(object):
 class SimpleExportor(SimpleProgressNotifier):
     def __init__(self):
         super(SimpleExportor, self).__init__()
-        self.name = "Simple Exporter"
-
-    def save(self, calculator):
-        return False
-
-
-class GeojsonExporter(SimpleExportor):
-    def __init__(self):
-        super().__init__()
-        self.name = "Geojson Exporter"
+        self.name = "Simple Exportor"
 
     def save(self, calculator):
         return False

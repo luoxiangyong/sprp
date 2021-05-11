@@ -41,7 +41,7 @@ from ..core.alg import *
 class LasExportor(SimpleExportor):
     def __init__(self,filename, aboveGround = 0.):
         super().__init__()
-        self.name = "Las Exporter"
+        self.name = "Las Exportor"
 
         self.x = []
         self.y = []

@@ -37,10 +37,10 @@ from osgeo import ogr,osr
 
 from ..core.alg  import *
 
-class ShapefileExporter(SimpleExportor):
+class ShapefileExportor(SimpleExportor):
     def __init__(self,path,basename):
         super().__init__()
-        self.name = "ESRI Shapefile Exporter"
+        self.name = "ESRI Shapefile Exportor"
 
         self.path = path
         self.basename = basename

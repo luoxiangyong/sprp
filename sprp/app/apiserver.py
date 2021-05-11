@@ -120,7 +120,7 @@ def polygon():
             filename = "{}".format(uuid.uuid4()) 
             filepath = tempfile.gettempdir()
             #print("ZIP文件：{}\n,{}\n{}\n---\n".format(filetype, filepath,filename))
-            sfe = ShapefileExporter(filepath, filename)
+            sfe = ShapefileExportor(filepath, filename)
             sfe.save(spc)
             
             filepath = os.path.join(filepath,filename)

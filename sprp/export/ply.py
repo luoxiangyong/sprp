@@ -42,7 +42,7 @@ from ..core.alg  import *
 class PlyExportor(SimpleExportor):
     def __init__(self,filename, aboveGround = 0.):
         super().__init__()
-        self.name = "PLY Exporter"
+        self.name = "PLY Exportor"
 
         self.vertex = None
 

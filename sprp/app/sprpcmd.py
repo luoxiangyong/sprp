@@ -103,7 +103,7 @@ def main():
         exportor = GeoJsonExportor(os.path.join(args.path, args.name)+'.json')
         exportor.save(sc)
     elif args.filetype.lower() == 'shapefile':
-            exportor = ShapefileExporter(args.path, args.name)
+            exportor = ShapefileExportor(args.path, args.name)
             exportor.save(sc)
     elif args.filetype.lower() == 'ply':
             exportor = PlyExportor(os.path.join(args.path, args.name)+'.ply')

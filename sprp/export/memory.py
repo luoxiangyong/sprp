@@ -40,10 +40,10 @@ from qgis.utils import *
 
 from ..core.alg  import *
 
-class MemoryExporter(SimpleExportor):
+class MemoryExportor(SimpleExportor):
     def __init__(self):
         super().__init__()
-        self.name = "Memory Exporter"
+        self.name = "Memory Exportor"
 
     def generatePointsLayer(self,calculator):
         ########################################################################
