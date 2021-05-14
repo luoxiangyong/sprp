@@ -116,6 +116,7 @@ def polygon():
             gje = GeoJsonExportor(filepath)
             gje.save(spc)
             mime='application/json,application/octet-stream'
+            user_filename += '.json'
         else:
             filename = "{}".format(uuid.uuid4()) 
             filepath = tempfile.gettempdir()
@@ -142,6 +143,7 @@ def polygon():
             zip_file.close()
             filepath = filepath + '.zip'
             mime = 'application/zip,application/octet-stream'
+            user_filename += '.zip'
 
         res = {
             "status":'sucess',

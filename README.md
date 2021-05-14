@@ -8,8 +8,12 @@ A simple photogrammetry route planner.
 
 $$\frac{focusLength}{flightHeight} = \frac{pixelSize}{GSD}$$
 
+$$ baselineCourse = (1-overlapCourse) * GSD * cameraHeight $$
+
+$$ baselineSidewise = (1-overlapSidewise) * GSD * cameraWidth $$
+
 (其中，$focusLength$为相机焦距，$flightHeight$为飞行高度，$pixelSize$为像素点物理大小，
-$GSD$为地面分辨率)。
+$GSD$为地面分辨率,overlapSidewise为旁向重叠度，overlapCourse为航向重叠度)。
 
 
 提供以下几种类型的航摄区域的自动曝光点生成:
@@ -48,6 +52,9 @@ $GSD$为地面分辨率)。
 pip3 install sprp
 ```
 ### 使用
+
+#### 基于Python的使用方法
+
 ```python
 from sprp.core.alg import *
 from sprp.export.txt import *
@@ -71,6 +78,29 @@ print(result)
 sfe = TxtExportor('/path/to/save/test-data/test-txt.txt')
 sfe.save(ssc)
 ```
+
+#### 使用命令行sprp-cmd
+
+```shell
+# sprp-cmd -h
+```
+
+#### 使用sprp-web
+
+```shell
+# sprp-web
+```
+
+用浏览器打开 http://127.0.0.1:8000
+
+
+#### 使用docker
+```shell
+# docker pull sololxy/sprp-web:latest
+# docker run -d --rm -name sprp-web -p8000:8000 sololxy/sprp-web:latest
+```
+
+用浏览器打开 http://127.0.0.1:8000
 
 ## 开发
 
