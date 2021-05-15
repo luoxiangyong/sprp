@@ -32,13 +32,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###############################################################################
 from shapely import geometry, wkt
-import pyproj
+from pyproj import Geod
 import math
-import os
-import shutil
-from osgeo import ogr, osr
-
-
 class SimpleProgressNotifier(object):
     def __init__(self):
         self.cb = None
@@ -129,7 +124,7 @@ class SimpleCalculator(SimpleProgressNotifier):
 
     def stastics(self):
         if self._points is not None:
-            geod = pyproj.Geod(ellps="WGS84")
+            geod = Geod(ellps="WGS84")
 
             pointCount = 0
             distance = 0
@@ -157,7 +152,7 @@ class SimpleCalculator(SimpleProgressNotifier):
             return None
 
     def caculate_line(self, startx, starty, endx, endy):
-        geod = pyproj.Geod(ellps="WGS84")
+        geod = Geod(ellps="WGS84")
         forwardAngle, backwardAngle, distance = geod.inv(
             startx, starty, endx, endy)
         stationCount = math.floor(distance / self.courseline)
@@ -207,7 +202,7 @@ class SimpleCalculator(SimpleProgressNotifier):
         imgAngle = math.atan(self.cameraWidth*1.0 /
                              self.cameraHeight) * 180/math.pi
 
-        geod = pyproj.Geod(ellps="WGS84")
+        geod = Geod(ellps="WGS84")
 
         # 矩形的对角线长
         distance = math.sqrt(math.pow(width, 2) + math.pow(height, 2))
@@ -332,7 +327,7 @@ class SimpleStripCalculator(SimpleCalculator):
 
             ########
 
-            geod = pyproj.Geod(ellps="WGS84")
+            geod = Geod(ellps="WGS84")
             angle, backAngle, distanceTmp = geod.inv(
                 self.startx, self.starty, self.endx, self.endy)
 
@@ -393,7 +388,7 @@ class SimplePolygonCalculator(SimpleCalculator):
         p4 = rect_coords[3]
 
         # 分别计算第一个点到邻近两个点的距离
-        geod = pyproj.Geod(ellps="WGS84")
+        geod = Geod(ellps="WGS84")
 
         # distance1 代表与第二个点的距离，CCW
         angle1, backAngle1, distance1 = geod.inv(p1[0], p1[1], p2[0], p2[1])
@@ -442,7 +437,7 @@ class SimplePolygonCalculator(SimpleCalculator):
             lineStardEndPoints = []
 
             ########
-            geod = pyproj.Geod(ellps="WGS84")
+            geod = Geod(ellps="WGS84")
             angle, backAngle, distanceTmp = geod.inv(
                 startx, starty, endx, endy)
 
