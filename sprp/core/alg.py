@@ -31,8 +31,15 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###############################################################################
-from shapely import geometry, wkt
-import pyproj
+# try:
+#     from shapely import geometry, wkt
+# except:
+#     pass
+
+try:
+    from pyproj import Geod
+except:
+    pass
 import math
 import os
 import shutil
@@ -56,6 +63,7 @@ class SimpleProgressNotifier(object):
     def emit_progress(self, msg):
         if self.cb:
             self.cb(self.currentProgressValue, self.totalProgressValue, msg)
+
 
 class SimpleExportor(SimpleProgressNotifier):
     def __init__(self):
@@ -129,7 +137,7 @@ class SimpleCalculator(SimpleProgressNotifier):
 
     def stastics(self):
         if self._points is not None:
-            geod = pyproj.Geod(ellps="WGS84")
+            geod = Geod(ellps="WGS84")
 
             pointCount = 0
             distance = 0
@@ -157,7 +165,7 @@ class SimpleCalculator(SimpleProgressNotifier):
             return None
 
     def caculate_line(self, startx, starty, endx, endy):
-        geod = pyproj.Geod(ellps="WGS84")
+        geod = Geod(ellps="WGS84")
         forwardAngle, backwardAngle, distance = geod.inv(
             startx, starty, endx, endy)
         stationCount = math.floor(distance / self.courseline)
@@ -207,7 +215,7 @@ class SimpleCalculator(SimpleProgressNotifier):
         imgAngle = math.atan(self.cameraWidth*1.0 /
                              self.cameraHeight) * 180/math.pi
 
-        geod = pyproj.Geod(ellps="WGS84")
+        geod = Geod(ellps="WGS84")
 
         # 矩形的对角线长
         distance = math.sqrt(math.pow(width, 2) + math.pow(height, 2))
@@ -280,6 +288,7 @@ class SimpleLineCalculator(SimpleCalculator):
         else:
             return False
 
+
 class SimpleStripCalculator(SimpleCalculator):
     """
     本类提供对条带区域的简单航摄区域自动曝光点设计的支持
@@ -332,7 +341,7 @@ class SimpleStripCalculator(SimpleCalculator):
 
             ########
 
-            geod = pyproj.Geod(ellps="WGS84")
+            geod = Geod(ellps="WGS84")
             angle, backAngle, distanceTmp = geod.inv(
                 self.startx, self.starty, self.endx, self.endy)
 
@@ -372,6 +381,7 @@ class SimpleStripCalculator(SimpleCalculator):
         else:
             return False
 
+
 class SimplePolygonCalculator(SimpleCalculator):
     """
     本类提供对多边形区域的简单航摄区域自动曝光点设计的支持
@@ -379,57 +389,66 @@ class SimplePolygonCalculator(SimpleCalculator):
     def __init__(self, wkt_polygon, **params):
         super().__init__(**params)
 
-        self.poly = wkt.loads(wkt_polygon)
-        # print("Before Orient:", self.poly.wkt)
-        self.poly = geometry.polygon.orient(self.poly, 1.0)
-        # print("After Orient:", self.poly.wkt)
+        # TODO: wkt.loads may cause QGIS crash!!!
+        try:
+            from shapely import wkt as shp_wkt
+            print("Original WKT:", wkt_polygon)
+            self.poly = shp_wkt.loads(wkt_polygon)
+            #print("Before Orient:", self.poly.wkt)
+            self.poly = geometry.polygon.orient(self.poly, 1.0)
+            # print("After Orient:", self.poly.wkt)
 
-        rect = self.poly.minimum_rotated_rectangle
-        rect_coords = list(rect.exterior.coords)
+            rect = self.poly.minimum_rotated_rectangle
+            rect_coords = list(rect.exterior.coords)
 
-        # 获取最佳包围矩形的三个点
-        p1 = rect_coords[0]
-        p2 = rect_coords[1]
-        p4 = rect_coords[3]
+            # 获取最佳包围矩形的三个点
+            p1 = rect_coords[0]
+            p2 = rect_coords[1]
+            p4 = rect_coords[3]
 
-        # 分别计算第一个点到邻近两个点的距离
-        geod = pyproj.Geod(ellps="WGS84")
+            # 分别计算第一个点到邻近两个点的距离
+            geod = Geod(ellps="WGS84")
 
-        # distance1 代表与第二个点的距离，CCW
-        angle1, backAngle1, distance1 = geod.inv(p1[0], p1[1], p2[0], p2[1])
-        # distance1 代表与第4个点的距离
-        angle2, backAngle2, distance2 = geod.inv(p1[0], p1[1], p4[0], p4[1])
+            # distance1 代表与第二个点的距离，CCW
+            angle1, backAngle1, distance1 = geod.inv(p1[0], p1[1], p2[0], p2[1])
+            # distance1 代表与第4个点的距离
+            angle2, backAngle2, distance2 = geod.inv(p1[0], p1[1], p4[0], p4[1])
 
-        #print(angle1, backAngle1, distance1)
-        #print(angle2, backAngle2, distance2)
+            #print(angle1, backAngle1, distance1)
+            #print(angle2, backAngle2, distance2)
 
-        angle1 = angle1 if angle1 > 0 else angle1 + 360
-        angle2 = angle2 if angle2 > 0 else angle2 + 360
+            angle1 = angle1 if angle1 > 0 else angle1 + 360
+            angle2 = angle2 if angle2 > 0 else angle2 + 360
 
-        #print(angle1, backAngle1, distance1)
-        #print(angle2, backAngle2, distance2)
+            #print(angle1, backAngle1, distance1)
+            #print(angle2, backAngle2, distance2)
 
-        # 确定使用哪个方向上的点为我所用
-        self.point_first = p1
-        self.point_final = p2 if distance1 > distance2 else p4
-        distance_final = distance1 if distance1 < distance2 else distance2
-        self.angle_final_added = 0
+            # 确定使用哪个方向上的点为我所用
+            self.point_first = p1
+            self.point_final = p2 if distance1 > distance2 else p4
+            distance_final = distance1 if distance1 < distance2 else distance2
+            self.angle_final_added = 0
 
-        directionLeft = True
-        if p1[0] < p2[0]:
-            if distance2 > distance1:
-                directionLeft = False
+            directionLeft = True
+            if p1[0] < p2[0]:
+                if distance2 > distance1:
+                    directionLeft = False
+                else:
+                    directionLeft = True
             else:
-                directionLeft = True
-        else:
-            if distance2 > distance1:
-                directionLeft = False
-            else:
-                directionLeft = True
+                if distance2 > distance1:
+                    directionLeft = False
+                else:
+                    directionLeft = True
 
-        expand_count = int(distance_final / self.sidewiseline)
-        self.leftExpand = expand_count if directionLeft is True else 0
-        self.rightExpand = expand_count if directionLeft is not True else 0
+            expand_count = int(distance_final / self.sidewiseline)
+            self.leftExpand = expand_count if directionLeft is True else 0
+            self.rightExpand = expand_count if directionLeft is not True else 0
+        except Exception as e:
+            print("*** Can't load shaplely")
+            raise e
+
+        
 
     def calculate(self):
         startx = self.point_first[0]
@@ -442,7 +461,7 @@ class SimplePolygonCalculator(SimpleCalculator):
             lineStardEndPoints = []
 
             ########
-            geod = pyproj.Geod(ellps="WGS84")
+            geod = Geod(ellps="WGS84")
             angle, backAngle, distanceTmp = geod.inv(
                 startx, starty, endx, endy)
 
@@ -479,3 +498,4 @@ class SimplePolygonCalculator(SimpleCalculator):
             return True
         else:
             return False
+            
