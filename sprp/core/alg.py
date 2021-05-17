@@ -31,9 +31,20 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###############################################################################
-from shapely import geometry, wkt
-from pyproj import Geod
+
+import sys
+if sys.platform == "linux":
+    try:
+        from pyproj import Geod
+    except:
+        pass
+else:
+    from shapely import wkt,geometry
+    from pyproj import Geod
+
 import math
+
+
 class SimpleProgressNotifier(object):
     def __init__(self):
         self.cb = None
@@ -51,6 +62,7 @@ class SimpleProgressNotifier(object):
     def emit_progress(self, msg):
         if self.cb:
             self.cb(self.currentProgressValue, self.totalProgressValue, msg)
+
 
 class SimpleExportor(SimpleProgressNotifier):
     def __init__(self):
@@ -275,6 +287,7 @@ class SimpleLineCalculator(SimpleCalculator):
         else:
             return False
 
+
 class SimpleStripCalculator(SimpleCalculator):
     """
     本类提供对条带区域的简单航摄区域自动曝光点设计的支持
@@ -367,6 +380,7 @@ class SimpleStripCalculator(SimpleCalculator):
         else:
             return False
 
+
 class SimplePolygonCalculator(SimpleCalculator):
     """
     本类提供对多边形区域的简单航摄区域自动曝光点设计的支持
@@ -374,8 +388,14 @@ class SimplePolygonCalculator(SimpleCalculator):
     def __init__(self, wkt_polygon, **params):
         super().__init__(**params)
 
+        # TODO: wkt.loads may cause QGIS crash!!!
+        #if sys.platform == 'linux':
+        #    from shapely import wkt,geometry
+        from shapely import wkt,geometry
+
+        print("Original WKT:", wkt_polygon)
         self.poly = wkt.loads(wkt_polygon)
-        # print("Before Orient:", self.poly.wkt)
+        #print("Before Orient:", self.poly.wkt)
         self.poly = geometry.polygon.orient(self.poly, 1.0)
         # print("After Orient:", self.poly.wkt)
 
@@ -425,6 +445,7 @@ class SimplePolygonCalculator(SimpleCalculator):
         expand_count = int(distance_final / self.sidewiseline)
         self.leftExpand = expand_count if directionLeft is True else 0
         self.rightExpand = expand_count if directionLeft is not True else 0
+        
 
     def calculate(self):
         startx = self.point_first[0]
@@ -474,3 +495,4 @@ class SimplePolygonCalculator(SimpleCalculator):
             return True
         else:
             return False
+            
