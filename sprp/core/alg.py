@@ -89,6 +89,9 @@ class SimpleCalculator(SimpleProgressNotifier):
         self.courseOverlap = kwargs.get('courseOverlap', 0.8)
         self.sidewiseOverlap = kwargs.get('sidewiseOverlap', 0.6)
 
+        self.courseExpand = kwargs.get('courseExpand', 3)
+        self.sidewiseExpand = kwargs.get('sidewiseExpand', 3)
+
         self.courseline = (1 - self.courseOverlap) * \
             self.cameraHeight * self.gsd
         self.sidewiseline = (1 - self.sidewiseOverlap) * \
@@ -167,20 +170,34 @@ class SimpleCalculator(SimpleProgressNotifier):
         geod = Geod(ellps="WGS84")
         forwardAngle, backwardAngle, distance = geod.inv(
             startx, starty, endx, endy)
+        
         stationCount = math.floor(distance / self.courseline)
-        wishedDistance = self.courseline * (stationCount + 1)
-        wished_endx, wished_endy, tempAngle = geod.fwd(
-            startx, starty, forwardAngle, wishedDistance)
 
-        points = geod.npts(startx, starty, wished_endx,
-                           wished_endy, stationCount - 1)
+        wished_startx, wished_starty, tempAngle = geod.fwd(
+            startx, starty, backwardAngle, self.courseline * self.courseExpand)
+
+
+        print("wished start x,y:", wished_startx, wished_starty)
+
+        wishedDistance = self.courseline * (stationCount + self.courseExpand * 2)
+        wished_endx, wished_endy, tempAngle = geod.fwd(
+            wished_startx, wished_starty, forwardAngle, wishedDistance)
+
+        print("wished end x,y:", wished_endx, wished_endy)
+
+        points = geod.npts(wished_startx, wished_starty, wished_endx,
+                           wished_endy, stationCount + self.courseExpand * 2)
+
+
 
         results = []
-        results.append((startx, starty))
+        results.append((wished_startx, wished_starty))
         results.extend(points)
         results.append((wished_endx, wished_endy))
 
         self.courseAngle = forwardAngle
+
+        print(results)
 
         return results, forwardAngle
 
@@ -464,7 +481,7 @@ class SimplePolygonCalculator(SimpleCalculator):
 
             long = startx
             lat = starty
-            for index in range(self.leftExpand):
+            for index in range(self.leftExpand + self.sidewiseExpand):
                 long, lat, tmpAngle = geod.fwd(
                     long, lat, angle-90, self.sidewiseline)
                 e_long, e_lat, tempAngle = geod.fwd(
@@ -475,7 +492,7 @@ class SimplePolygonCalculator(SimpleCalculator):
 
             long = startx
             lat = starty
-            for index in range(self.rightExpand):
+            for index in range(self.rightExpand + self.sidewiseExpand):
                 long, lat, tmpAngle = geod.fwd(
                     long, lat, angle+90, self.sidewiseline)
                 e_long, e_lat, tempAngle = geod.fwd(
