@@ -81,6 +81,8 @@
             this.courseOverlap = 0.8
             this.sidewiseOverlap = 0.6
             this.gsd = 0.05
+            this.courseExpand = 1
+            this.sidewiseExpand = 1
 
             // render
             this.fillColor = '#0000ff'
@@ -117,7 +119,9 @@
                         "sidewiseOverlap":options.sidewiseOverlap,
                         "gsd":options.gsd,
                         'filetype':options.exportFormat,
-                        'filename':options.filename
+                        'filename':options.filename,
+                        "courseExpand":options.courseExpand,
+                        "sidewiseExpand":options.sidewiseExpand,
                     }
 
                     getFileUrl = createURL(getFileUrlConfig)
@@ -158,6 +162,8 @@
             f2.add(options, "courseOverlap", 0.6,1.0)
             f2.add(options, "sidewiseOverlap", 0.3,1.0)
             f2.add(options, "gsd", 0.01,0.50)
+            f2.add(options, "courseExpand", 0,5,1)
+            f2.add(options, "sidewiseExpand", 0,5,1)
             f2.open()
 
             var f3 = gui.addFolder('Render Parameters')
@@ -313,7 +319,9 @@
                 "pixelSize":options.pixelSize,
                 "courseOverlap":options.courseOverlap,
                 "sidewiseOverlap":options.sidewiseOverlap,
-                "gsd":options.gsd
+                "gsd":options.gsd,
+                "courseExpand":options.courseExpand,
+                "sidewiseExpand":options.sidewiseExpand,
             }
 
             url = createURL(urlConfig)

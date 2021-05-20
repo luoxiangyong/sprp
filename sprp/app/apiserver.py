@@ -62,6 +62,8 @@ def polygon():
     gsd = request.args.get("gsd")
     filetype = request.args.get("filetype")
     user_filename = request.args.get("filename")
+    courseExpand = request.args.get("courseExpand")
+    sidewiseExpand = request.args.get("sidewiseExpand")
     
     user_filename = user_filename if (user_filename != None 
                     or user_filename == '') else "lxy"
@@ -82,6 +84,9 @@ def polygon():
                                 "courseOverlap":float(courseOverlap),
                                 "sidewiseOverlap":float(sidewiseOverlap), }
             )
+
+        spc.courseExpand = int(float(courseExpand))
+        spc.sidewiseExpand = int(float(sidewiseExpand))
 
         result = spc.calculate()
 
@@ -107,6 +112,9 @@ def polygon():
             )
 
         result = spc.calculate()
+
+        spc.courseExpand = int(float(courseExpand))
+        spc.sidewiseExpand = int(float(sidewiseExpand))
         
         if filetype == 'GeoJSON':
             file_ext = ".json"
